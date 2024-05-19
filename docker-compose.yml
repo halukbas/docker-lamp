@@ -1,0 +1,45 @@
+services:
+  apache:
+    image: php:apache
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/var/www/html
+    networks:
+      - lamp
+  
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - lamp
+    
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - mariadb
+    networks:
+      - lamp
+
+networks:
+  lamp:
+    driver: bridge
+
+volumes:
+  mariadb:
+
